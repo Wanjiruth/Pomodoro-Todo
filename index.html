@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruth's Pomodoro App</title>
+  <style>
+    /* --- your styles stay the same --- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffb6c1 0%, #ff69b4 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #ff69b4, #ff1493);
+      padding: 30px;
+      color: white;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 0;
+    }
+
+    .todo-section {
+      padding: 30px;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .pomodoro-section {
+      padding: 30px;
+      background: #fff0f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .add-todo {
+      display: flex;
+      margin-bottom: 30px;
+      gap: 10px;
+    }
+
+    .add-todo input {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .add-todo input:focus {
+      border-color: #ff69b4;
+    }
+
+    .add-btn {
+      background: linear-gradient(135deg, #ff69b4, #ff1493);
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .todo-list {
+      list-style: none;
+    }
+
+    .todo-item {
+      background: white;
+      margin-bottom: 15px;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.3s;
+    }
+
+    .todo-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .todo-item.completed {
+      opacity: 0.6;
+      text-decoration: line-through;
+    }
+
+    .todo-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ff69b4;
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .todo-checkbox.checked {
+      background: #ff69b4;
+    }
+
+    .todo-checkbox.checked::after {
+      content: '✓';
+      position: absolute;
+      color: white;
+      font-size: 14px;
+      top: -2px;
+      left: 2px;
+    }
+
+    .todo-text {
+      flex: 1;
+      font-size: 16px;
+    }
+
+    .delete-btn {
+      background: #ff1493;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .timer-display {
+      font-size: 4em;
+      font-weight: 300;
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .timer-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .start-btn {
+      background: #ff69b4;
+      color: white;
+    }
+
+    .pause-btn {
+      background: #ffb6c1;
+      color: white;
+    }
+
+    .reset-btn {
+      background: #ff1493;
+      color: white;
+    }
+
+    .timer-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .timer-modes {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      padding: 8px 16px;
+      border: 2px solid #ff69b4;
+      background: white;
+      color: #ff69b4;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s;
+    }
+
+    .mode-btn.active {
+      background: #ff69b4;
+      color: white;
+    }
+
+    .progress-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: conic-gradient(#ff69b4 0deg, #e0e0e0 0deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .progress-circle::before {
+      content: '';
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #fff0f5;
+      position: absolute;
+    }
+
+    .stats {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+
+      .todo-section {
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .timer-display {
+        font-size: 3em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>RUTH'S POMODORO APP</h1>
+      <p>Stay focused with tasks and Pomodoro technique</p>
+    </div>
+
+    <div class="main-content">
+      <div class="todo-section">
+        <div class="add-todo">
+          <input type="text" id="todoInput" placeholder="What needs to be done?" maxlength="100">
+          <button class="add-btn" onclick="addTodo()">Add</button>
+        </div>
+        <ul class="todo-list" id="todoList"></ul>
+      </div>
+
+      <div class="pomodoro-section">
+        <div class="timer-modes">
+          <button class="mode-btn active" onclick="setMode('work')">Work</button>
+          <button class="mode-btn" onclick="setMode('short')">Short Break</button>
+          <button class="mode-btn" onclick="setMode('long')">Long Break</button>
+        </div>
+
+        <div class="timer-display" id="timerDisplay">40:00</div>
+
+        <div class="progress-circle" id="progressCircle"></div>
+
+        <div class="timer-controls">
+          <button class="timer-btn start-btn" id="startBtn" onclick="startTimer()">Start</button>
+          <button class="timer-btn pause-btn" id="pauseBtn" onclick="pauseTimer()">Pause</button>
+          <button class="timer-btn reset-btn" onclick="resetTimer()">Reset</button>
+        </div>
+
+        <div class="stats">
+          <div>Sessions completed: <span id="sessionCount">0</span></div>
+          <div>Current mode: <span id="currentMode">Work</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bell sound -->
+  <audio id="bellSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
+  <script>
+    // Todo List functionality
+    let todos = [];
+    let todoId = 0;
+
+    function addTodo() {
+      const input = document.getElementById('todoInput');
+      const text = input.value.trim();
+      if (text === '') return;
+      const todo = { id: todoId++, text: text, completed: false };
+      todos.push(todo);
+      input.value = '';
+      renderTodos();
+    }
+
+    function toggleTodo(id) {
+      const todo = todos.find(t => t.id === id);
+      if (todo) {
+        todo.completed = !todo.completed;
+        renderTodos();
+      }
+    }
+
+    function deleteTodo(id) {
+      todos = todos.filter(t => t.id !== id);
+      renderTodos();
+    }
+
+    function renderTodos() {
+      const list = document.getElementById('todoList');
+      list.innerHTML = '';
+      todos.forEach(todo => {
+        const li = document.createElement('li');
+        li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+        li.innerHTML = `
+          <div class="todo-checkbox ${todo.completed ? 'checked' : ''}" onclick="toggleTodo(${todo.id})"></div>
+          <span class="todo-text">${todo.text}</span>
+          <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // Pomodoro Timer
+    let timeLeft = 40 * 60; // 40 minutes
+    let timerId = null;
+    let isRunning = false;
+    let currentMode = 'work';
+    let sessionCount = 0;
+
+    const modes = {
+      work: 40 * 60,
+      short: 5 * 60,
+      long: 15 * 60
+    };
+
+    function setMode(mode) {
+      if (isRunning) return;
+      currentMode = mode;
+      timeLeft = modes[mode];
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('currentMode').textContent =
+        mode === 'work' ? 'Work' : mode === 'short' ? 'Short Break' : 'Long Break';
+      updateDisplay();
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      document.getElementById('startBtn').textContent = 'Running...';
+      timerId = setInterval(() => {
+        timeLeft--;
+        updateDisplay();
+        if (timeLeft <= 0) completeSession();
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (!isRunning) return;
+      isRunning = false;
+      clearInterval(timerId);
+      document.getElementById('startBtn').textContent = 'Start';
+    }
+
+    function resetTimer() {
+      isRunning = false;
+      clearInterval(timerId);
+      timeLeft = modes[currentMode];
+      document.getElementById('startBtn').textContent = 'Start';
+      updateDisplay();
+    }
+
+    function completeSession() {
+      isRunning = false;
+      clearInterval(timerId);
+      sessionCount++;
+      document.getElementById('sessionCount').textContent = sessionCount;
+      document.getElementById('startBtn').textContent = 'Start';
+
+      // Play bell
+      document.getElementById('bellSound').play();
+
+      //  Speak congratulatory message only for Work sessions
+      if (currentMode === 'work') {
+        const utterance = new SpeechSynthesisUtterance("Congratulations God's Princess");
+        speechSynthesis.speak(utterance);
+      }
+
+      // Auto switch to break after work
+      if (currentMode === 'work') {
+        const nextMode = sessionCount % 4 === 0 ? 'long' : 'short';
+        setTimeout(() => setMode(nextMode), 1000);
+      }
+      alert(`${currentMode === 'work' ? 'Work' : 'Break'} session completed!`);
+    }
+
+    function updateDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      document.getElementById('timerDisplay').textContent =
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+      const totalTime = modes[currentMode];
+      const progress = ((totalTime - timeLeft) / totalTime) * 360;
+      document.getElementById('progressCircle').style.background =
+        `conic-gradient(#ff69b4 ${progress}deg, #e0e0e0 ${progress}deg)`;
+    }
+
+    // Enter key adds todos
+    document.getElementById('todoInput').addEventListener('keypress', e => {
+      if (e.key === 'Enter') addTodo();
+    });
+
+    updateDisplay();
+  </script>
+</body>
+</html>
