@@ -3,12 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruth's Pomodoro App</title>
+  <title>Ruth's Cute Pomodoro App 🌸</title>
   <style>
+    /* ---------- THEME VARIABLES ---------- */
+    :root {
+      --primary: #ff69b4;
+      --secondary: #ff1493;
+      --light: #ffb6c1;
+      --bg-light: #fff0f5;
+    }
+    .theme-pink {
+      --primary: #ff69b4;
+      --secondary: #ff1493;
+      --light: #ffb6c1;
+      --bg-light: #fff0f5;
+    }
+    .theme-purple {
+      --primary: #9b59b6;
+      --secondary: #6c3483;
+      --light: #d2b4de;
+      --bg-light: #f4ecf7;
+    }
+    .theme-blue {
+      --primary: #3498db;
+      --secondary: #21618c;
+      --light: #aed6f1;
+      --bg-light: #ebf5fb;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #ffb6c1 0%, #ff69b4 100%);
+      background: linear-gradient(135deg, var(--light) 0%, var(--primary) 100%);
       min-height: 100vh;
       padding: 20px;
     }
@@ -19,18 +45,19 @@
       border-radius: 20px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
       overflow: hidden;
+      position: relative;
     }
     .header {
-      background: linear-gradient(135deg, #ff69b4, #ff1493);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       padding: 30px;
       color: white;
       text-align: center;
     }
     .header h1 { font-size: 2.5em; margin-bottom: 10px; font-weight: 600; }
     .main-content { display: grid; grid-template-columns: 1fr 300px; gap: 0; }
-    .todo-section { padding: 30px; border-right: 1px solid #e0e0e0; }
+    .todo-section { padding: 30px; border-right: 1px solid #e0e0e0; position: relative; }
     .pomodoro-section {
-      padding: 30px; background: #fff0f5;
+      padding: 30px; background: var(--bg-light);
       display: flex; flex-direction: column; align-items: center;
     }
     .add-todo { display: flex; margin-bottom: 30px; gap: 10px; }
@@ -38,9 +65,9 @@
       flex: 1; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px;
       font-size: 16px; outline: none; transition: border-color 0.3s;
     }
-    .add-todo input:focus { border-color: #ff69b4; }
+    .add-todo input:focus { border-color: var(--primary); }
     .add-btn {
-      background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; border: none;
+      background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none;
       padding: 15px 25px; border-radius: 10px; cursor: pointer; font-weight: 600;
       transition: transform 0.2s;
     }
@@ -54,18 +81,88 @@
     .todo-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
     .todo-item.completed { opacity: 0.6; text-decoration: line-through; }
     .todo-checkbox {
-      width: 20px; height: 20px; border: 2px solid #ff69b4; border-radius: 5px;
+      width: 20px; height: 20px; border: 2px solid var(--primary); border-radius: 5px;
       cursor: pointer; position: relative;
     }
-    .todo-checkbox.checked { background: #ff69b4; }
+    .todo-checkbox.checked { background: var(--primary); }
     .todo-checkbox.checked::after {
       content: '✓'; position: absolute; color: white; font-size: 14px; top: -2px; left: 2px;
     }
     .todo-text { flex: 1; font-size: 16px; }
     .delete-btn {
-      background: #ff1493; color: white; border: none; padding: 8px 12px;
+      background: var(--secondary); color: white; border: none; padding: 8px 12px;
       border-radius: 8px; cursor: pointer; font-size: 14px;
     }
+    
+    /* Completion celebration message */
+    .completion-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      z-index: 1000;
+      transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      max-width: 500px;
+    }
+    .completion-message.show {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .completion-message h2 {
+      font-size: 2em;
+      margin-bottom: 15px;
+      animation: bounce 1s ease-in-out;
+    }
+    .completion-message p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeIn 0.5s 0.5s forwards;
+    }
+    .completion-message .close-btn {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+    .completion-message .close-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: var(--primary);
+      position: absolute;
+      animation: fall 3s linear;
+    }
+    
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
     .timer-display {
       font-size: 4em; font-weight: 300; color: #333; margin-bottom: 30px;
       text-align: center; font-family: 'Courier New', monospace;
@@ -75,28 +172,29 @@
       padding: 12px 20px; border: none; border-radius: 25px; cursor: pointer;
       font-weight: 600; font-size: 14px; transition: all 0.3s;
     }
-    .start-btn { background: #ff69b4; color: white; }
-    .pause-btn { background: #ffb6c1; color: white; }
-    .reset-btn { background: #ff1493; color: white; }
+    .start-btn { background: var(--primary); color: white; }
+    .pause-btn { background: var(--light); color: white; }
+    .reset-btn { background: var(--secondary); color: white; }
     .timer-btn:hover { transform: translateY(-2px); }
     .timer-modes { display: flex; gap: 10px; margin-bottom: 20px; }
     .mode-btn {
-      padding: 8px 16px; border: 2px solid #ff69b4; background: white;
-      color: #ff69b4; border-radius: 20px; cursor: pointer; font-size: 12px;
+      padding: 8px 16px; border: 2px solid var(--primary); background: white;
+      color: var(--primary); border-radius: 20px; cursor: pointer; font-size: 12px;
       transition: all 0.3s;
     }
-    .mode-btn.active { background: #ff69b4; color: white; }
+    .mode-btn.active { background: var(--primary); color: white; }
     .progress-circle {
       width: 120px; height: 120px; border-radius: 50%;
-      background: conic-gradient(#ff69b4 0deg, #e0e0e0 0deg);
+      background: conic-gradient(var(--primary) 0deg, #e0e0e0 0deg);
       display: flex; align-items: center; justify-content: center;
       margin: 20px 0; position: relative;
     }
     .progress-circle::before {
       content: ''; width: 100px; height: 100px; border-radius: 50%;
-      background: #fff0f5; position: absolute;
+      background: var(--bg-light); position: absolute;
     }
     .stats { text-align: center; color: #666; font-size: 14px; }
+
     @media (max-width: 768px) {
       .main-content { grid-template-columns: 1fr; }
       .todo-section { border-right: none; border-bottom: 1px solid #e0e0e0; }
@@ -104,17 +202,24 @@
     }
   </style>
 </head>
-<body>
+<body class="theme-pink">
   <div class="container">
     <div class="header">
-      <h1>RUTH'S POMODORO APP</h1>
-      <p>Stay focused with tasks</p>
+      <h1>RUTH'S CUTE POMODORO APP </h1>
+      <p>Stay focused, stay cute ✨</p>
+    </div>
+
+    <!-- Theme switch buttons -->
+    <div style="text-align:center; margin: 10px;">
+      <button onclick="document.body.className='theme-pink'">🌸 Pink</button>
+      <button onclick="document.body.className='theme-purple'">💜 Purple</button>
+      <button onclick="document.body.className='theme-blue'">💙 Blue</button>
     </div>
 
     <div class="main-content">
       <div class="todo-section">
         <div class="add-todo">
-          <input type="text" id="todoInput" placeholder="What needs to be done?" maxlength="100">
+          <input type="text" id="todoInput" placeholder=" ✍️ What needs to be done?" maxlength="100">
           <button class="add-btn" onclick="addTodo()">Add</button>
         </div>
         <ul class="todo-list" id="todoList"></ul>
@@ -122,9 +227,9 @@
 
       <div class="pomodoro-section">
         <div class="timer-modes">
-          <button class="mode-btn active" data-mode="work">Work</button>
-          <button class="mode-btn" data-mode="short">Short Break</button>
-          <button class="mode-btn" data-mode="long">Long Break</button>
+          <button class="mode-btn active" data-mode="work"> Work</button>
+          <button class="mode-btn" data-mode="short">  Short Break</button>
+          <button class="mode-btn" data-mode="long"> Long Break</button>
         </div>
 
         <div class="timer-display" id="timerDisplay">40:00</div>
@@ -144,11 +249,17 @@
     </div>
   </div>
 
+  <!-- Completion message popup -->
+  <div id="completionMessage" class="completion-message">
+    <h2>🎉 All Tasks Complete! 🎉</h2>
+    <p id="eveningMessage">Great work today! Time to relax and enjoy your evening!</p>
+    <button class="close-btn" onclick="closeCompletionMessage()">Close</button>
+  </div>
+
   <!-- Bell sound -->
   <audio id="bellSound" src="https://actions.google.com/sounds/v1/alarms/medium_bell_ringing_near.ogg" preload="auto"></audio>
 
   <script>
-    // ---------- Todo List ----------
     let todos = [];
     let todoId = 0;
 
@@ -167,12 +278,71 @@
       if (todo) {
         todo.completed = !todo.completed;
         renderTodos();
+        checkAllCompleted();
       }
     }
 
     function deleteTodo(id) {
       todos = todos.filter(t => t.id !== id);
       renderTodos();
+    }
+
+    function checkAllCompleted() {
+      // Check if all todos are completed (and there's at least one todo)
+      if (todos.length > 0 && todos.every(todo => todo.completed)) {
+        showCompletionMessage();
+      }
+    }
+
+    function showCompletionMessage() {
+      const messageEl = document.getElementById('completionMessage');
+      const eveningMessageEl = document.getElementById('eveningMessage');
+      
+      // Get current hour to determine time of day
+      const hour = new Date().getHours();
+      let message = '';
+      
+      if (hour >= 5 && hour < 12) {
+        message = "🌅 Amazing morning productivity! All tasks crushed before noon!";
+      } else if (hour >= 12 && hour < 17) {
+        message = "☀️ Afternoon champion! You've conquered your todo list!";
+      } else if (hour >= 17 && hour < 21) {
+        message = "🌆 Perfect evening! All tasks done. Time to unwind and relax!";
+      } else {
+        message = "🌙 Night owl productivity! All done ! Now get some well-deserved rest!";
+      }
+      
+      eveningMessageEl.textContent = message;
+      messageEl.classList.add('show');
+      
+      // Create confetti effect
+      createConfetti();
+      
+      // Play a sound
+      document.getElementById('bellSound').play();
+      
+      // Also use speech synthesis for extra celebration
+      const utterance = new SpeechSynthesisUtterance(message);
+      speechSynthesis.speak(utterance);
+    }
+
+    function closeCompletionMessage() {
+      document.getElementById('completionMessage').classList.remove('show');
+    }
+
+    function createConfetti() {
+      const colors = ['#ff69b4', '#ff1493', '#ffb6c1', '#fff', '#ffd700'];
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDelay = Math.random() * 1 + 's';
+          document.body.appendChild(confetti);
+          setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+      }
     }
 
     function renderTodos() {
@@ -190,7 +360,7 @@
       });
     }
 
-    // ---------- Pomodoro Timer ----------
+    //timer logic
     let timeLeft = 40 * 60; 
     let timerId = null;
     let isRunning = false;
@@ -215,9 +385,13 @@
     function startTimer() {
       if (isRunning) return;
       isRunning = true;
-      timerEndTime = Date.now() + timeLeft * 1000;
+      if (!timerEndTime) {
+        timerEndTime = Date.now() + timeLeft * 1000;
+      }
       document.getElementById('startBtn').textContent = 'Running...';
+      clearInterval(timerId);
       timerId = setInterval(updateTimer, 1000);
+      updateTimer();
     }
 
     function pauseTimer() {
@@ -225,6 +399,7 @@
       isRunning = false;
       clearInterval(timerId);
       timeLeft = getCurrentTimeLeft();
+      timerEndTime = null;
       document.getElementById('startBtn').textContent = 'Start';
     }
 
@@ -238,7 +413,7 @@
     }
 
     function getCurrentTimeLeft() {
-      if (!timerEndTime) return modes[currentMode];
+      if (!timerEndTime) return timeLeft;
       const now = Date.now();
       return Math.max(0, Math.ceil((timerEndTime - now) / 1000));
     }
@@ -276,17 +451,15 @@
       const totalTime = modes[currentMode];
       const progress = ((totalTime - timeLeft) / totalTime) * 360;
       document.getElementById('progressCircle').style.background =
-        `conic-gradient(#ff69b4 ${progress}deg, #e0e0e0 ${progress}deg)`;
+        `conic-gradient(var(--primary) ${progress}deg, #e0e0e0 ${progress}deg)`;
     }
 
-    // ---------- Events ----------
     document.addEventListener('visibilitychange', () => {
       if (isRunning && document.visibilityState === 'visible') updateTimer();
     });
     window.addEventListener('focus', () => { if (isRunning) updateTimer(); });
     document.getElementById('todoInput').addEventListener('keypress', e => { if (e.key === 'Enter') addTodo(); });
 
-    // Attach button listeners
     document.getElementById('startBtn').addEventListener('click', startTimer);
     document.getElementById('pauseBtn').addEventListener('click', pauseTimer);
     document.getElementById('resetBtn').addEventListener('click', resetTimer);
