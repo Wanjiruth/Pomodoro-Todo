@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruth's Cute Pomodoro App 🌸</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-pink">
+  <div class="container">
+    <div class="header">
+      <h1>RUTH'S CUTE POMODORO APP </h1>
+      <p>Stay focused, stay cute ✨</p>
+    </div>
+
+    <div class="main-content">
+      <div class="todo-section">
+        <div class="add-todo">
+          <input type="text" id="todoInput" placeholder=" ✍️ What needs to be done?" maxlength="100">
+          <button class="add-btn" onclick="addTodo()">Add</button>
+        </div>
+        <ul class="todo-list" id="todoList"></ul>
+      </div>
+
+      <div class="pomodoro-section">
+        <!-- Theme switch buttons -->
+        <div class="theme-switcher">
+          <button class="theme-btn theme-pink-btn" onclick="document.body.className='theme-pink'">
+            <span class="theme-color pink"></span>
+            Pink
+          </button>
+          <button class="theme-btn theme-purple-btn" onclick="document.body.className='theme-purple'">
+            <span class="theme-color purple"></span>
+            Purple
+          </button>
+          <button class="theme-btn theme-blue-btn" onclick="document.body.className='theme-blue'">
+            <span class="theme-color blue"></span>
+            Blue
+          </button>
+        </div>
+
+        <div class="timer-modes">
+          <button class="mode-btn active" data-mode="work"> Work</button>
+          <button class="mode-btn" data-mode="short">  Short Break</button>
+          <button class="mode-btn" data-mode="long"> Long Break</button>
+        </div>
+
+        <div class="timer-display" id="timerDisplay">40:00</div>
+        <div class="progress-circle" id="progressCircle"></div>
+
+        <div class="timer-controls">
+          <button class="timer-btn start-btn" id="startBtn">Start</button>
+          <button class="timer-btn pause-btn" id="pauseBtn">Pause</button>
+          <button class="timer-btn reset-btn" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="stats">
+          <div>Sessions completed: <span id="sessionCount">0</span></div>
+          <div>Current mode: <span id="currentMode">Work</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cute Pet -->
+  <div id="walkingCharacter" class="cute-pet">
+    <div class="pet-body">
+      <!-- Ears -->
+      <div class="ears">
+        <div class="ear left-ear"></div>
+        <div class="ear right-ear"></div>
+      </div>
+      <!-- Head -->
+      <div class="pet-head">
+        <div class="eyes">
+          <div class="eye left-eye">
+            <div class="pupil"></div>
+          </div>
+          <div class="eye right-eye">
+            <div class="pupil"></div>
+          </div>
+        </div>
+        <div class="nose"></div>
+        <div class="mouth"></div>
+        <!-- Cheeks for blushing -->
+        <div class="cheeks">
+          <div class="cheek left-cheek"></div>
+          <div class="cheek right-cheek"></div>
+        </div>
+      </div>
+      <!-- Tail -->
+      <div class="tail"></div>
+    </div>
+    <!-- Heart particles for celebration -->
+    <div class="heart-particles"></div>
+  </div>
+
+  <!-- Completion message popup -->
+  <div id="completionMessage" class="completion-message">
+    <h2>🎉 All Tasks Complete! 🎉</h2>
+    <p id="eveningMessage">Great work today! Time to relax and enjoy your evening!</p>
+    <button class="close-btn" onclick="closeCompletionMessage()">Close</button>
+  </div>
+
+  <!-- Bell sound -->
+  <audio id="bellSound" src="https://actions.google.com/sounds/v1/alarms/medium_bell_ringing_near.ogg" preload="auto"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>/* ---------- THEME VARIABLES ---------- */
+
+:root {
+  --primary: #ff69b4;
+  --secondary: #ff1493;
+  --light: #ffb6c1;
+  --bg-light: #fff0f5;
+}
+
+.theme-pink {
+  --primary: #ff69b4;
+  --secondary: #ff1493;
+  --light: #ffb6c1;
+  --bg-light: #fff0f5;
+}
+
+.theme-purple {
+  --primary: #9b59b6;
+  --secondary: #6c3483;
+  --light: #d2b4de;
+  --bg-light: #f4ecf7;
+}
+
+.theme-blue {
+  --primary: #3498db;
+  --secondary: #21618c;
+  --light: #aed6f1;
+  --bg-light: #ebf5fb;
+}
+
+/* ---------- BASE STYLES ---------- */
+
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--light) 0%, var(--primary) 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---------- HEADER ---------- */
+
+.header {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: 30px;
+  color: white;
+  text-align: center;
+}
+
+.header h1 { 
+  font-size: 2.5em; 
+  margin-bottom: 10px; 
+  font-weight: 600; 
+}
+
+/* ---------- MAIN CONTENT ---------- */
+
+.main-content { 
+  display: grid; 
+  grid-template-columns: 1fr 300px; 
+  gap: 0; 
+}
+
+.todo-section { 
+  padding: 30px; 
+  border-right: 1px solid #e0e0e0; 
+  position: relative; 
+}
+
+.pomodoro-section {
+  padding: 30px; 
+  background: var(--bg-light);
+  display: flex; 
+  flex-direction: column; 
+  align-items: center;
+}
+
+/* ---------- TODO STYLES ---------- */
+
+.add-todo { 
+  display: flex; 
+  margin-bottom: 30px; 
+  gap: 10px; 
+}
+
+.add-todo input {
+  flex: 1; 
+  padding: 15px; 
+  border: 2px solid #e0e0e0; 
+  border-radius: 10px;
+  font-size: 16px; 
+  outline: none; 
+  transition: border-color 0.3s;
+}
+
+.add-todo input:focus { 
+  border-color: var(--primary); 
+}
+
+.add-btn {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+  color: white; 
+  border: none;
+  padding: 15px 25px; 
+  border-radius: 10px; 
+  cursor: pointer; 
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+.add-btn:hover { 
+  transform: translateY(-2px); 
+}
+
+.todo-list { 
+  list-style: none; 
+}
+
+.todo-item {
+  background: white; 
+  margin-bottom: 15px; 
+  padding: 20px; 
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  display: flex; 
+  align-items: center; 
+  gap: 15px; 
+  transition: all 0.3s;
+}
+
+.todo-item:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); 
+}
+
+.todo-item.completed { 
+  opacity: 0.6; 
+  text-decoration: line-through; 
+}
+
+.todo-checkbox {
+  width: 20px; 
+  height: 20px; 
+  border: 2px solid var(--primary); 
+  border-radius: 5px;
+  cursor: pointer; 
+  position: relative;
+}
+
+.todo-checkbox.checked { 
+  background: var(--primary); 
+}
+
+.todo-checkbox.checked::after {
+  content: '✓'; 
+  position: absolute; 
+  color: white; 
+  font-size: 14px; 
+  top: -2px; 
+  left: 2px;
+}
+
+.todo-text { 
+  flex: 1; 
+  font-size: 16px; 
+}
+
+.delete-btn {
+  background: var(--secondary); 
+  color: white; 
+  border: none; 
+  padding: 8px 12px;
+  border-radius: 8px; 
+  cursor: pointer; 
+  font-size: 14px;
+}
+
+/* ---------- COMPLETION MESSAGE ---------- */
+
+.completion-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  z-index: 1000;
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  max-width: 500px;
+}
+
+.completion-message.show {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.completion-message h2 {
+  font-size: 2em;
+  margin-bottom: 15px;
+  animation: bounce 1s ease-in-out;
+}
+
+.completion-message p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeIn 0.5s 0.5s forwards;
+}
+
+.completion-message .close-btn {
+  background: white;
+  color: var(--primary);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+.completion-message .close-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ---------- CUTE PET ---------- */
+
+.cute-pet {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1500;
+  pointer-events: none;
+  transform: scale(0);
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.cute-pet.appear {
+  transform: scale(1);
+}
+
+.pet-body {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.pet-head {
+  width: 60px;
+  height: 60px;
+  background: var(--primary);
+  border-radius: 50%;
+  position: relative;
+  margin: 0 auto;
+  animation: idle-breathe 3s ease-in-out infinite;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Pet Actions */
+.cute-pet.happy .pet-head {
+  animation: happy-bounce 0.6s ease-in-out infinite;
+}
+
+.cute-pet.excited .pet-head {
+  animation: excited-shake 0.3s ease-in-out infinite;
+}
+
+.cute-pet.celebrating .pet-head {
+  animation: celebrate-spin 1s ease-in-out;
+}
+
+/* Ears */
+.ears {
+  position: absolute;
+  top: -15px;
+  width: 100%;
+}
+
+.ear {
+  position: absolute;
+  width: 20px;
+  height: 30px;
+  background: var(--secondary);
+  border-radius: 50% 50% 20% 80%;
+  top: 0;
+}
+
+.left-ear {
+  left: 8px;
+  transform: rotate(-20deg);
+  animation: ear-wiggle-left 2s ease-in-out infinite;
+}
+
+.right-ear {
+  right: 8px;
+  transform: rotate(20deg);
+  animation: ear-wiggle-right 2s ease-in-out infinite;
+}
+
+.cute-pet.excited .ear {
+  animation: excited-ear-wiggle 0.3s ease-in-out infinite;
+}
+
+/* Eyes */
+.eyes {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+.eye {
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  position: relative;
+  animation: blink 4s ease-in-out infinite;
+}
+
+.pupil {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #333;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: all 0.3s ease;
+}
+
+.cute-pet.happy .pupil {
+  transform: scale(1.2);
+  background: #000;
+}
+
+/* Heart eyes for celebration */
+.cute-pet.celebrating .eye {
+  background: #ff69b4;
+  animation: heart-eyes 0.5s ease-in-out infinite;
+}
+
+.cute-pet.celebrating .pupil {
+  display: none;
+}
+
+.cute-pet.celebrating .eye::after {
+  content: '♥';
+  position: absolute;
+  color: white;
+  font-size: 8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Nose */
+.nose {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 4px;
+  background: var(--secondary);
+  border-radius: 50%;
+  animation: nose-twitch 3s ease-in-out infinite;
+}
+
+/* Mouth */
+.mouth {
+  position: absolute;
+  top: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 6px;
+  border: 2px solid var(--secondary);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  background: transparent;
+}
+
+.cute-pet.happy .mouth {
+  width: 16px;
+  height: 8px;
+  animation: happy-pant 0.5s ease-in-out infinite;
+}
+
+/* Cheeks for blushing */
+.cheeks {
+  position: absolute;
+  top: 25px;
+  width: 100%;
+}
+
+.cheek {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 192, 203, 0);
+  border-radius: 50%;
+  transition: background 0.5s ease;
+}
+
+.left-cheek {
+  left: 2px;
+}
+
+.right-cheek {
+  right: 2px;
+}
+
+.cute-pet.happy .cheek {
+  background: rgba(255, 192, 203, 0.6);
+  animation: blush-pulse 1s ease-in-out infinite;
+}
+
+/* Tail */
+.tail {
+  position: absolute;
+  bottom: 15px;
+  right: -15px;
+  width: 25px;
+  height: 8px;
+  background: var(--secondary);
+  border-radius: 50%;
+  transform-origin: left center;
+  animation: tail-wag 1.5s ease-in-out infinite;
+}
+
+.cute-pet.excited .tail {
+  animation: excited-tail-wag 0.2s ease-in-out infinite;
+}
+
+.cute-pet.happy .tail {
+  animation: happy-tail-wag 0.8s ease-in-out infinite;
+}
+
+/* Heart Particles */
+.heart-particles {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.heart {
+  position: absolute;
+  color: var(--primary);
+  font-size: 12px;
+  animation: float-heart 2s ease-out forwards;
+  opacity: 0;
+}
+
+/* Pet Animations */
+@keyframes idle-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes happy-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+}
+
+@keyframes excited-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px) rotate(-1deg); }
+  75% { transform: translateX(2px) rotate(1deg); }
+}
+
+@keyframes celebrate-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes ear-wiggle-left {
+  0%, 100% { transform: rotate(-20deg); }
+  50% { transform: rotate(-25deg); }
+}
+
+@keyframes ear-wiggle-right {
+  0%, 100% { transform: rotate(20deg); }
+  50% { transform: rotate(25deg); }
+}
+
+@keyframes excited-ear-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-10deg); }
+}
+
+@keyframes tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  75% { transform: rotate(-15deg); }
+}
+
+@keyframes excited-tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(30deg); }
+}
+
+@keyframes happy-tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(25deg); }
+  75% { transform: rotate(-25deg); }
+}
+
+@keyframes blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+@keyframes heart-eyes {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes nose-twitch {
+  0%, 95%, 100% { transform: translateX(-50%) scale(1); }
+  97% { transform: translateX(-50%) scale(1.2); }
+}
+
+@keyframes happy-pant {
+  0%, 100% { height: 6px; }
+  50% { height: 10px; }
+}
+
+@keyframes blush-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes float-heart {
+  0% { 
+    opacity: 1; 
+    transform: translateY(0) scale(0.5); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: translateY(-50px) scale(1); 
+  }
+} 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-20deg); }
+}
+
+@keyframes simple-walk-right {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(20deg); }
+}
+
+@keyframes blink {
+  0%, 90%, 100% { opacity: 1; }
+  95% { opacity: 0; }
+}
+
+/* ---------- ANIMATIONS ---------- */
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: var(--primary);
+  position: absolute;
+  animation: fall 3s linear;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ---------- TIMER STYLES ---------- */
+
+.theme-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 25px;
+  justify-content: center;
+}
+
+.theme-btn {
+  background: white;
+  color: #666;
+  border: 2px solid #e0e0e0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.theme-color.pink {
+  background: #ff69b4;
+}
+
+.theme-color.purple {
+  background: #9b59b6;
+}
+
+.theme-color.blue {
+  background: #3498db;
+}
+
+/* Active theme button styling */
+.theme-pink .theme-pink-btn {
+  border-color: #ff69b4;
+  background: #ff69b4;
+  color: white;
+}
+
+.theme-purple .theme-purple-btn {
+  border-color: #9b59b6;
+  background: #9b59b6;
+  color: white;
+}
+
+.theme-blue .theme-blue-btn {
+  border-color: #3498db;
+  background: #3498db;
+  color: white;
+}
+
+.timer-display {
+  font-size: 4em; 
+  font-weight: 300; 
+  color: #333; 
+  margin-bottom: 30px;
+  text-align: center; 
+  font-family: 'Courier New', monospace;
+}
+
+.timer-controls { 
+  display: flex; 
+  gap: 15px; 
+  margin-bottom: 30px; 
+}
+
+.timer-btn {
+  padding: 12px 20px; 
+  border: none; 
+  border-radius: 25px; 
+  cursor: pointer;
+  font-weight: 600; 
+  font-size: 14px; 
+  transition: all 0.3s;
+}
+
+.start-btn { 
+  background: var(--primary); 
+  color: white; 
+}
+
+.pause-btn { 
+  background: var(--light); 
+  color: white; 
+}
+
+.reset-btn { 
+  background: var(--secondary); 
+  color: white; 
+}
+
+.timer-btn:hover { 
+  transform: translateY(-2px); 
+}
+
+.timer-modes { 
+  display: flex; 
+  gap: 10px; 
+  margin-bottom: 20px; 
+}
+
+.mode-btn {
+  padding: 8px 16px; 
+  border: 2px solid var(--primary); 
+  background: white;
+  color: var(--primary); 
+  border-radius: 20px; 
+  cursor: pointer; 
+  font-size: 12px;
+  transition: all 0.3s;
+}
+
+.mode-btn.active { 
+  background: var(--primary); 
+  color: white; 
+}
+
+.progress-circle {
+  width: 120px; 
+  height: 120px; 
+  border-radius: 50%;
+  background: conic-gradient(var(--primary) 0deg, #e0e0e0 0deg);
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  margin: 20px 0; 
+  position: relative;
+}
+
+.progress-circle::before {
+  content: ''; 
+  width: 100px; 
+  height: 100px; 
+  border-radius: 50%;
+  background: var(--bg-light); 
+  position: absolute;
+}
+
+.stats { 
+  text-align: center; 
+  color: #666; 
+  font-size: 14px; 
+}
+
+/* ---------- RESPONSIVE DESIGN ---------- */
+
+@media (max-width: 768px) {
+  .main-content { 
+    grid-template-columns: 1fr; 
+  }
+  .todo-section { 
+    border-right: none; 
+    border-bottom: 1px solid #e0e0e0; 
+  }
+  .timer-display { 
+    font-size: 3em; 
+  }
+  .theme-switcher {
+    gap: 6px;
+  }
+  .theme-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  .theme-color {
+    width: 10px;
+    height: 10px;
+  }
+}// ---------- TODO FUNCTIONALITY ----------
+
+let todos = [];
+let todoId = 0;
+
+function addTodo() {
+  const input = document.getElementById('todoInput');
+  const text = input.value.trim();
+  if (text === '') return;
+  const todo = { id: todoId++, text: text, completed: false };
+  todos.push(todo);
+  input.value = '';
+  renderTodos();
+}
+
+function toggleTodo(id) {
+  const todo = todos.find(t => t.id === id);
+  if (todo) {
+    const wasCompleted = todo.completed;
+    todo.completed = !todo.completed;
+    renderTodos();
+    
+    // Trigger walking character when a task is completed (not uncompleted)
+    if (!wasCompleted && todo.completed) {
+      console.log('Task completed! Triggering character...'); // Debug log
+      triggerWalkingCharacter();
+    }
+    
+    checkAllCompleted();
+  }
+}
+
+function deleteTodo(id) {
+  todos = todos.filter(t => t.id !== id);
+  renderTodos();
+}
+
+function checkAllCompleted() {
+  // Check if all todos are completed (and there's at least one todo)
+  if (todos.length > 0 && todos.every(todo => todo.completed)) {
+    showCompletionMessage();
+  }
+}
+
+function showCompletionMessage() {
+  const messageEl = document.getElementById('completionMessage');
+  const eveningMessageEl = document.getElementById('eveningMessage');
+  
+  // Get current hour to determine time of day
+  const hour = new Date().getHours();
+  let message = '';
+  
+  if (hour >= 5 && hour < 12) {
+    message = "🌅 Amazing morning productivity! All tasks crushed before noon!";
+  } else if (hour >= 12 && hour < 17) {
+    message = "☀️ Afternoon champion! You've conquered your todo list!";
+  } else if (hour >= 17 && hour < 21) {
+    message = "🌆 Perfect evening! All tasks done. Time to unwind and relax!";
+  } else {
+    message = "🌙 Night owl productivity! All done ! Now get some well-deserved rest!";
+  }
+  
+  eveningMessageEl.textContent = message;
+  messageEl.classList.add('show');
+  
+  // Create confetti effect
+  createConfetti();
+  
+  // Play a sound
+  document.getElementById('bellSound').play();
+  
+  // Also use speech synthesis for extra celebration
+  const utterance = new SpeechSynthesisUtterance(message);
+  speechSynthesis.speak(utterance);
+}
+
+function triggerWalkingCharacter() {
+  const pet = document.getElementById('walkingCharacter');
+  
+  console.log('Cute pet triggered!'); // Debug log
+  
+  // Random pet actions for variety
+  const actions = ['happy', 'excited', 'celebrating'];
+  const randomAction = actions[Math.floor(Math.random() * actions.length)];
+  
+  // Reset pet state
+  pet.className = 'cute-pet';
+  
+  // Show pet with bounce effect
+  setTimeout(() => {
+    pet.classList.add('appear', randomAction);
+    
+    // Create heart particles if celebrating
+    if (randomAction === 'celebrating') {
+      createHeartParticles();
+    }
+    
+    console.log(`Pet is ${randomAction}!`);
+    
+    // Pet stays visible for different durations based on action
+    const duration = randomAction === 'celebrating' ? 3000 : 
+                    randomAction === 'excited' ? 2000 : 2500;
+    
+    setTimeout(() => {
+      pet.classList.remove('appear', randomAction);
+      console.log('Pet disappeared');
+    }, duration);
+    
+  }, 300);
+}
+
+function createHeartParticles() {
+  const heartsContainer = document.querySelector('.heart-particles');
+  
+  // Create 5 floating hearts
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.textContent = '♥';
+      heart.style.left = (Math.random() * 40 - 20) + 'px';
+      heart.style.animationDelay = (Math.random() * 0.5) + 's';
+      
+      heartsContainer.appendChild(heart);
+      
+      // Remove heart after animation
+      setTimeout(() => {
+        if (heart.parentNode) {
+          heart.parentNode.removeChild(heart);
+        }
+      }, 2000);
+    }, i * 200);
+  }
+}
+
+function closeCompletionMessage() {
+  document.getElementById('completionMessage').classList.remove('show');
+}
+
+function createConfetti() {
+  const colors = ['#ff69b4', '#ff1493', '#ffb6c1', '#fff', '#ffd700'];
+  for (let i = 0; i < 50; i++) {
+    setTimeout(() => {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDelay = Math.random() * 1 + 's';
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 3000);
+    }, i * 30);
+  }
+}
+
+function renderTodos() {
+  const list = document.getElementById('todoList');
+  list.innerHTML = '';
+  todos.forEach(todo => {
+    const li = document.createElement('li');
+    li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+    li.innerHTML = `
+      <div class="todo-checkbox ${todo.completed ? 'checked' : ''}" onclick="toggleTodo(${todo.id})"></div>
+      <span class="todo-text">${todo.text}</span>
+      <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+// ---------- TIMER FUNCTIONALITY ----------
+
+let timeLeft = 40 * 60; 
+let timerId = null;
+let isRunning = false;
+let currentMode = 'work';
+let sessionCount = 0;
+let timerEndTime = null;
+
+const modes = { work: 40*60, short: 5*60, long: 15*60 };
+
+function setMode(mode) {
+  if (isRunning) return;
+  currentMode = mode;
+  timeLeft = modes[mode];
+  timerEndTime = null;
+  document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.mode-btn[data-mode="${mode}"]`).classList.add('active');
+  document.getElementById('currentMode').textContent =
+    mode === 'work' ? 'Work' : mode === 'short' ? 'Short Break' : 'Long Break';
+  updateDisplay();
+}
+
+function startTimer() {
+  if (isRunning) return;
+  isRunning = true;
+  if (!timerEndTime) {
+    timerEndTime = Date.now() + timeLeft * 1000;
+  }
+  document.getElementById('startBtn').textContent = 'Running...';
+  clearInterval(timerId);
+  timerId = setInterval(updateTimer, 1000);
+  updateTimer();
+}
+
+function pauseTimer() {
+  if (!isRunning) return;
+  isRunning = false;
+  clearInterval(timerId);
+  timeLeft = getCurrentTimeLeft();
+  timerEndTime = null;
+  document.getElementById('startBtn').textContent = 'Start';
+}
+
+function resetTimer() {
+  isRunning = false;
+  clearInterval(timerId);
+  timeLeft = modes[currentMode];
+  timerEndTime = null;
+  document.getElementById('startBtn').textContent = 'Start';
+  updateDisplay();
+}
+
+function getCurrentTimeLeft() {
+  if (!timerEndTime) return timeLeft;
+  const now = Date.now();
+  return Math.max(0, Math.ceil((timerEndTime - now) / 1000));
+}
+
+function updateTimer() {
+  timeLeft = getCurrentTimeLeft();
+  updateDisplay();
+  if (timeLeft <= 0) completeSession();
+}
+
+function completeSession() {
+  isRunning = false;
+  clearInterval(timerId);
+  timerEndTime = null;
+  sessionCount++;
+  document.getElementById('sessionCount').textContent = sessionCount;
+  document.getElementById('startBtn').textContent = 'Start';
+  document.getElementById('bellSound').play();
+
+  if (currentMode === 'work') {
+    speechSynthesis.speak(new SpeechSynthesisUtterance("Congratulations You Amazing Human! Time for a break."));
+  }
+  if (currentMode === 'work') {
+    const nextMode = sessionCount % 4 === 0 ? 'long' : 'short';
+    setTimeout(() => setMode(nextMode), 1000);
+  }
+  alert(`${currentMode === 'work' ? 'Work' : 'Break'} session completed!`);
+}
+
+function updateDisplay() {
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  document.getElementById('timerDisplay').textContent =
+    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  const totalTime = modes[currentMode];
+  const progress = ((totalTime - timeLeft) / totalTime) * 360;
+  document.getElementById('progressCircle').style.background =
+    `conic-gradient(var(--primary) ${progress}deg, #e0e0e0 ${progress}deg)`;
+}
+
+// ---------- EVENT LISTENERS ----------
+
+document.addEventListener('visibilitychange', () => {
+  if (isRunning && document.visibilityState === 'visible') updateTimer();
+});
+
+window.addEventListener('focus', () => { 
+  if (isRunning) updateTimer(); 
+});
+
+document.getElementById('todoInput').addEventListener('keypress', e => { 
+  if (e.key === 'Enter') addTodo(); 
+});
+
+document.getElementById('startBtn').addEventListener('click', startTimer);
+document.getElementById('pauseBtn').addEventListener('click', pauseTimer);
+document.getElementById('resetBtn').addEventListener('click', resetTimer);
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => setMode(btn.getAttribute('data-mode')));
+});
+
+// ---------- INITIALIZATION ----------
+
+updateDisplay();
