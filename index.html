@@ -3,70 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruth's Cute Pomodoro App 🌸</title>
+  <title>Ruth's Cute Pomodoro App</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="theme-pink">
+<body class="theme-purple">
   <div class="container">
     <div class="header">
-      <h1>RUTH'S CUTE POMODORO APP </h1>
-      <p>Stay focused, stay cute ✨</p>
+      <h1 id="headerTitle">Luxury is built in little actions.</h1>
+      <p id="headerSubtitle">Stay poised, stay radiant ✨</p>
+      <p id="themeDescription" class="theme-description"></p>
     </div>
 
     <div class="main-content">
       <div class="todo-section">
-        <div class="add-todo">
-          <input type="text" id="todoInput" placeholder=" ✍️ What needs to be done?" maxlength="100">
-          <button class="add-btn" onclick="addTodo()">Add</button>
+        <div class="todo-header">
+          <h2 id="todoSectionTitle">Today's Tasks</h2>
+          <div class="todo-stats" id="todoStats">0 of 0 complete</div>
         </div>
-        <ul class="todo-list" id="todoList"></ul>
+
+        <div class="add-todo">
+          <input type="text" id="todoInput" placeholder=" Which royal moves do you wanna make?" maxlength="100" aria-label="Add new task">
+          <button class="add-btn" onclick="addTodo()" aria-label="Add task">
+            <span>Add Task</span>
+          </button>
+        </div>
+        <ul class="todo-list" id="todoList" role="list"></ul>
       </div>
 
       <div class="pomodoro-section">
-        <!-- Theme switch buttons -->
-        <div class="theme-switcher">
-          <button class="theme-btn theme-pink-btn" onclick="document.body.className='theme-pink'">
-            <span class="theme-color pink"></span>
-            Pink
-          </button>
-          <button class="theme-btn theme-purple-btn" onclick="document.body.className='theme-purple'">
-            <span class="theme-color purple"></span>
-            Purple
-          </button>
-          <button class="theme-btn theme-blue-btn" onclick="document.body.className='theme-blue'">
-            <span class="theme-color blue"></span>
-            Blue
-          </button>
+        <div class="timer-header">
+          <h2>Focus Timer</h2>
+          
+          <!-- Theme switcher - repositioned and styled better -->
+          <div class="theme-switcher" role="group" aria-label="Theme selector">
+            <button class="theme-btn theme-blue-btn" onclick="setTheme('theme-blue')" aria-label="Blue grind theme">
+              <span class="theme-icon">💪</span>
+              <span class="theme-label">Grind</span>
+            </button>
+            <button class="theme-btn theme-mint-btn" onclick="setTheme('theme-mint')" aria-label="Mint flow theme">
+              <span class="theme-icon">🌱</span>
+              <span class="theme-label">Flow</span>
+            </button>
+            <button class="theme-btn theme-pink-btn" onclick="setTheme('theme-pink')" aria-label="Pink queen theme">
+              <span class="theme-icon">🌸</span>
+              <span class="theme-label">Cute</span>
+            </button>
+            <button class="theme-btn theme-purple-btn" onclick="setTheme('theme-purple')" aria-label="Purple cute theme">
+              <span class="theme-icon">👑</span>
+              <span class="theme-label">Queen</span>
+            </button>
+          </div>
         </div>
 
-        <div class="timer-modes">
-          <button class="mode-btn active" data-mode="work"> Work</button>
-          <button class="mode-btn" data-mode="short">  Short Break</button>
-          <button class="mode-btn" data-mode="long"> Long Break</button>
+        <div class="timer-modes" role="group" aria-label="Timer modes">
+          <button class="mode-btn active" data-mode="work">🎯 Work</button>
+          <button class="mode-btn" data-mode="short">☕ Short Break</button>
+          <button class="mode-btn" data-mode="long">🌸 Long Break</button>
         </div>
 
-        <div class="timer-display" id="timerDisplay">40:00</div>
-        <div class="progress-circle" id="progressCircle"></div>
+        <div class="timer-display-container">
+          <div class="progress-ring">
+            <div class="progress-ring-bg"></div>
+            <div class="progress-ring-fill" id="progressRing"></div>
+            <div class="timer-display" id="timerDisplay" aria-live="polite">40:00</div>
+          </div>
+        </div>
 
-        <div class="timer-controls">
-          <button class="timer-btn start-btn" id="startBtn">Start</button>
-          <button class="timer-btn pause-btn" id="pauseBtn">Pause</button>
-          <button class="timer-btn reset-btn" id="resetBtn">Reset</button>
+        <div class="timer-controls" role="group" aria-label="Timer controls">
+          <button class="timer-btn start-btn" id="startBtn" aria-label="Start timer">▶ Start</button>
+          <button class="timer-btn pause-btn" id="pauseBtn" aria-label="Pause timer">⏸ Pause</button>
+          <button class="timer-btn reset-btn" id="resetBtn" aria-label="Reset timer">⏹ Reset</button>
         </div>
 
         <div class="stats">
-          <div>Sessions completed: <span id="sessionCount">0</span></div>
-          <div>Current mode: <span id="currentMode">Work</span></div>
+          <div class="stat-item">Sessions completed: <span id="sessionCount">0</span></div>
+          <div class="stat-item">Current mode: <span id="currentMode">Work</span></div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Cute Pet -->
+  <div id="walkingCharacter" class="cute-pet" role="img" aria-label="Cute mascot pet">
+    <div class="pet-body">
+      <div class="ears">
+        <div class="ear left-ear"></div>
+        <div class="ear right-ear"></div>
+      </div>
+      <div class="pet-head">
+        <div class="eyes">
+          <div class="eye left-eye">
+            <div class="pupil"></div>
+          </div>
+          <div class="eye right-eye">
+            <div class="pupil"></div>
+          </div>
+        </div>
+        <div class="nose"></div>
+        <div class="mouth"></div>
+        <div class="cheeks">
+          <div class="cheek left-cheek"></div>
+          <div class="cheek right-cheek"></div>
+        </div>
+      </div>
+      <div class="tail"></div>
+    </div>
+    <div class="heart-particles"></div>
+  </div>
+
   <!-- Completion message popup -->
-  <div id="completionMessage" class="completion-message">
-    <h2>🎉 All Tasks Complete! 🎉</h2>
-    <p id="eveningMessage">Great work today! Time to relax and enjoy your evening!</p>
-    <button class="close-btn" onclick="closeCompletionMessage()">Close</button>
+  <div id="completionMessage" class="completion-message" role="dialog" aria-labelledby="completion-title" aria-describedby="completion-text">
+    <h2 id="completion-title">🎉 All Tasks Complete! 🎉</h2>
+    <p id="completion-text">Great work today! Wind down!</p>
+    <button class="close-btn" onclick="closeCompletionMessage()" aria-label="Close celebration message">✨ Amazing! ✨</button>
   </div>
 
   <!-- Bell sound -->
